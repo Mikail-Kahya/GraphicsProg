@@ -23,9 +23,24 @@ namespace dae
 
 			const float discriminant{ B * B - 4 * A * C };
 
-			if (discriminant < 0);
+			// no hit if discriminant is 0
+			hitRecord.didHit = discriminant > 0;
 
-			return false;
+			if (!hitRecord.didHit)
+				return false;
+
+			const float tMin{ 0.0001f };
+			const float tMax{ 10000 }; //const float tMax{ FLT_MAX };
+			float t{};
+
+			t = (-B - sqrt(discriminant)) / (2 * A);
+
+			if (t < tMin && t > tMax)
+				t = (-B + sqrt(discriminant)) / (2 * A);
+
+			hitRecord.origin = ray.origin + t * originVec;
+
+			return true;
 		}
 
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray)

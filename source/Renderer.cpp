@@ -28,25 +28,30 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 
 	const float aspectRatio{ m_Width / float(m_Height) };
+	// Test sphere
+	Sphere testSphere{ {0.f,0.f,100.f}, 50.f, 0 };
 
 	for (int px{ }; px < m_Width; ++px)
 	{
 		for (int py{ }; py < m_Height; ++py)
 		{
-			// float gradient = px / static_cast<float>(m_Width);
-			// gradient += py / static_cast<float>(m_Width);
-			// gradient /= 2.0f;
-
 			const float x{ 2 * (px + 0.5f) / m_Width - 1 };
 			const float y{ 1 - 2 * (py + 0.5f) / m_Height };
 			Vector3 rayDirection{ x * aspectRatio, y, 1};
 
 			rayDirection.Normalize();
 
-			Ray hitRay{ {0,0,0}, rayDirection };
-			ColorRGB finalColor{ rayDirection.x, rayDirection.y, rayDirection.z };
+			Ray viewRay{ {0,0,0}, rayDirection };
 
-			// ColorRGB finalColor{ gradient, gradient, gradient };
+			ColorRGB finalColor{};
+
+			// hitinfo
+			HitRecord closestHit{};
+
+			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
+
+			if (closestHit.didHit)
+				finalColor = materials[closestHit.materialIndex]->Shade();
 
 			// Update Color in Buffer
 			finalColor.MaxToOne();
