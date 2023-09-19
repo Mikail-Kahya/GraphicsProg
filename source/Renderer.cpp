@@ -35,11 +35,11 @@ void Renderer::Render(Scene* pScene) const
 	{
 		for (int py{ }; py < m_Height; ++py)
 		{
-			const float x{ 2 * (px + 0.5f) / m_Width - 1 };
+			const float x{ (2 * (px + 0.5f) / m_Width - 1) * aspectRatio };
 			const float y{ 1 - 2 * (py + 0.5f) / m_Height };
-			Vector3 rayDirection{ x * aspectRatio, y, 1};
 
-			rayDirection.Normalize();
+			Vector3 rayDirection{ x, y, 1};
+			//rayDirection.Normalize();
 
 			Ray viewRay{ {0,0,0}, rayDirection };
 
@@ -52,11 +52,10 @@ void Renderer::Render(Scene* pScene) const
 
 			if (closestHit.didHit)
 			{
-				const float scaledT{ (closestHit.t - 50.f) / 40 };
+				const float scaledT{ (closestHit.t - 50.f) / 40.f };
+				finalColor = ColorRGB{ scaledT, scaledT, scaledT };
 				//finalColor = materials[closestHit.materialIndex]->Shade();
-				finalColor = { scaledT, scaledT, scaledT };
 			}
-				//finalColor = materials[closestHit.materialIndex]->Shade();
 
 			// Update Color in Buffer
 			finalColor.MaxToOne();
