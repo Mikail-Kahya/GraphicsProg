@@ -47,15 +47,10 @@ void Renderer::Render(Scene* pScene) const
 
 			// hitinfo
 			HitRecord closestHit{};
-
-			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
+			pScene->GetClosestHit(viewRay, closestHit);
 
 			if (closestHit.didHit)
-			{
-				const float scaledT{ (closestHit.t - 50.f) / 40.f };
-				//finalColor = ColorRGB{ scaledT, scaledT, scaledT };
 				finalColor = materials[closestHit.materialIndex]->Shade();
-			}
 
 			// Update Color in Buffer
 			finalColor.MaxToOne();

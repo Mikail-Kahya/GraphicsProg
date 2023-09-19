@@ -62,8 +62,21 @@ namespace dae
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W1
-			assert(false && "No Implemented Yet!");
-			return false;
+			// assert(false && "No Implemented Yet!");
+
+			// calculate the distance to the intersection
+			const float t{ Vector3::Dot((plane.origin - ray.origin) , plane.normal) / Vector3::Dot(ray.direction, plane.normal) };
+
+			// check distance in range
+			hitRecord.didHit = t > ray.min && t < ray.max;
+			if (!hitRecord.didHit)
+				return false;
+
+			hitRecord.origin = ray.origin + t * ray.direction;
+			hitRecord.materialIndex = plane.materialIndex;
+			hitRecord.t = t;
+
+			return true;
 		}
 
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray)
