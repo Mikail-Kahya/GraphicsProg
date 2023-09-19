@@ -15,7 +15,6 @@ namespace dae
 			//todo W1
 			//assert(false && "No Implemented Yet!");
 
-<<<<<<< HEAD
 			const Vector3 L{ sphere.origin - ray.origin };
 			const float tca{ Vector3::Dot(L, ray.direction) };
 			//const float od{ Vector3::Reject(L, ray.direction).Magnitude() };
@@ -29,7 +28,7 @@ namespace dae
 
 			hitRecord.didHit = true;
 			hitRecord.origin = ray.origin + hitRecord.t * ray.direction;
-=======
+
 			// d = ray.direction
 
 			const Vector3 cameraToSphere{ ray.origin - sphere.origin };
@@ -63,7 +62,6 @@ namespace dae
 			hitRecord.t = t;
 			hitRecord.materialIndex = sphere.materialIndex;
 
->>>>>>> a323d0d (finish ex 3)
 			return true;
 		}
 

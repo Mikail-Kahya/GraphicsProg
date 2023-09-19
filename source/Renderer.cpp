@@ -29,7 +29,7 @@ void Renderer::Render(Scene* pScene) const
 
 	const float aspectRatio{ m_Width / float(m_Height) };
 	// Test sphere
-	Sphere testSphere{ {0.f,0.f,500}, 50, 0};
+	Sphere testSphere{ {0.f,0.f,100}, 50, 0};
 
 	for (int px{ }; px < m_Width; ++px)
 	{
