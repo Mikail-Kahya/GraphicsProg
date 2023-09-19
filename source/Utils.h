@@ -15,20 +15,6 @@ namespace dae
 			//todo W1
 			//assert(false && "No Implemented Yet!");
 
-			const Vector3 L{ sphere.origin - ray.origin };
-			const float tca{ Vector3::Dot(L, ray.direction) };
-			//const float od{ Vector3::Reject(L, ray.direction).Magnitude() };
-			const float od{ std::sqrt(L.SqrMagnitude() - tca * tca) };
-			const float thc{ sqrtf(sphere.radius * sphere.radius + od * od) };
-
-			hitRecord.t = tca - thc;
-
-			if (hitRecord.t < 0)
-				return false;
-
-			hitRecord.didHit = true;
-			hitRecord.origin = ray.origin + hitRecord.t * ray.direction;
-
 			// d = ray.direction
 
 			const Vector3 cameraToSphere{ ray.origin - sphere.origin };
@@ -42,7 +28,7 @@ namespace dae
 
 			// no hit if discriminant is 0
 			hitRecord.didHit = discriminant > 0;
-			
+
 			if (!hitRecord.didHit)
 				return false;
 
@@ -51,7 +37,7 @@ namespace dae
 			// check if inside of min and max
 			hitRecord.didHit = t > ray.min && t < ray.max;
 
-			if(!hitRecord.didHit)
+			if (!hitRecord.didHit)
 				return false;
 
 
