@@ -29,7 +29,7 @@ void Renderer::Render(Scene* pScene) const
 
 	const float aspectRatio{ m_Width / float(m_Height) };
 	// Test sphere
-	Sphere testSphere{ {0.f,0.f,100.f}, 50.f, 0 };
+	Sphere testSphere{ {0.f,0.f,500}, 50, 0};
 
 	for (int px{ }; px < m_Width; ++px)
 	{
@@ -51,7 +51,12 @@ void Renderer::Render(Scene* pScene) const
 			GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
 
 			if (closestHit.didHit)
-				finalColor = materials[closestHit.materialIndex]->Shade();
+			{
+				const float scaledT{ (closestHit.t - 50.f) / 40 };
+				//finalColor = materials[closestHit.materialIndex]->Shade();
+				finalColor = { scaledT, scaledT, scaledT };
+			}
+				//finalColor = materials[closestHit.materialIndex]->Shade();
 
 			// Update Color in Buffer
 			finalColor.MaxToOne();

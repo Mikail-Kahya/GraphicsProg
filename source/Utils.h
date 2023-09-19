@@ -17,15 +17,17 @@ namespace dae
 
 			const Vector3 L{ sphere.origin - ray.origin };
 			const float tca{ Vector3::Dot(L, ray.direction) };
-			const float od{ Vector3::Reject(L, ray.direction).Magnitude() };
+			//const float od{ Vector3::Reject(L, ray.direction).Magnitude() };
+			const float od{ std::sqrt(L.SqrMagnitude() - tca * tca) };
 			const float thc{ sqrtf(sphere.radius * sphere.radius + od * od) };
-			const float t{ tca - thc };
 
-			if (t < 0)
+			hitRecord.t = tca - thc;
+
+			if (hitRecord.t < 0)
 				return false;
-			
+
 			hitRecord.didHit = true;
-			hitRecord.origin = ray.origin + t * ray.direction;
+			hitRecord.origin = ray.origin + hitRecord.t * ray.direction;
 			return true;
 		}
 
