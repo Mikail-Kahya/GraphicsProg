@@ -13,7 +13,18 @@ namespace dae
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W1
-			assert(false && "No Implemented Yet!");
+			//assert(false && "No Implemented Yet!");
+
+			// d = ray.direction
+			const Vector3 originVec{ ray.origin - sphere.origin };
+			const float A{ Vector3::Dot(ray.direction, ray.direction) };
+			const float B{ Vector3::Dot(2 * ray.direction, originVec) };
+			const float C{ Vector3::Dot(originVec, originVec) };
+
+			const float discriminant{ B * B - 4 * A * C };
+
+			if (discriminant < 0);
+
 			return false;
 		}
 

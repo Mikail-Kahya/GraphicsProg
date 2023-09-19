@@ -27,17 +27,28 @@ void Renderer::Render(Scene* pScene) const
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
 
-	for (int px{}; px < m_Width; ++px)
+	const float aspectRatio{ m_Width / float(m_Height) };
+
+	for (int px{ }; px < m_Width; ++px)
 	{
-		for (int py{}; py < m_Height; ++py)
+		for (int py{ }; py < m_Height; ++py)
 		{
-			float gradient = px / static_cast<float>(m_Width);
-			gradient += py / static_cast<float>(m_Width);
-			gradient /= 2.0f;
+			// float gradient = px / static_cast<float>(m_Width);
+			// gradient += py / static_cast<float>(m_Width);
+			// gradient /= 2.0f;
 
-			ColorRGB finalColor{ gradient, gradient, gradient };
+			const float x{ 2 * (px + 0.5f) / m_Width - 1 };
+			const float y{ 1 - 2 * (py + 0.5f) / m_Height };
+			Vector3 rayDirection{ x * aspectRatio, y, 1};
 
-			//Update Color in Buffer
+			rayDirection.Normalize();
+
+			Ray hitRay{ {0,0,0}, rayDirection };
+			ColorRGB finalColor{ rayDirection.x, rayDirection.y, rayDirection.z };
+
+			// ColorRGB finalColor{ gradient, gradient, gradient };
+
+			// Update Color in Buffer
 			finalColor.MaxToOne();
 
 			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,

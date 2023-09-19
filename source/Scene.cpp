@@ -125,6 +125,27 @@ namespace dae {
 		AddPlane({ 0.f, -75.f, 0.f }, { 0.f, 1.f,0.f }, matId_Solid_Yellow);
 		AddPlane({ 0.f, 75.f, 0.f }, { 0.f, -1.f,0.f }, matId_Solid_Yellow);
 		AddPlane({ 0.f, 0.f, 125.f }, { 0.f, 0.f,-1.f }, matId_Solid_Magenta);
+
+		Test();
+	}
+	void Scene_W1::Test()
+	{
+		float dotResult{};
+		dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
+		std::cout << dotResult << std::endl;
+
+		dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
+		std::cout << dotResult << std::endl;
+
+		dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
+		std::cout << dotResult << std::endl;
+
+		Vector3 crossResult{};
+		crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
+		std::cout << crossResult << std::endl;
+
+		crossResult = Vector3::Cross(Vector3::UnitX, -Vector3::UnitZ);
+		std::cout << crossResult << std::endl;
 	}
 #pragma endregion
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace dae
 {
@@ -42,6 +43,7 @@ namespace dae
 		Vector3& operator*=(float scale);
 		float& operator[](int index);
 		float operator[](int index) const;
+		friend std::ostream& operator<<(std::ostream& os, Vector3& obj);
 
 		static const Vector3 UnitX;
 		static const Vector3 UnitY;
@@ -54,4 +56,6 @@ namespace dae
 	{
 		return { v.x * scale, v.y * scale, v.z * scale };
 	}
+	
+	std::ostream& operator<<(std::ostream& os, Vector3& obj);
 }
