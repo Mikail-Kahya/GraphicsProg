@@ -15,31 +15,17 @@ namespace dae
 			//todo W1
 			//assert(false && "No Implemented Yet!");
 
-			// d = ray.direction
-			const Vector3 originVec{ ray.origin - sphere.origin };
-			const float A{ Vector3::Dot(ray.direction, ray.direction) };
-			const float B{ Vector3::Dot(2 * ray.direction, originVec) };
-			const float C{ Vector3::Dot(originVec, originVec) };
+			const Vector3 L{ sphere.origin - ray.origin };
+			const float tca{ Vector3::Dot(L, ray.direction) };
+			const float od{ Vector3::Reject(L, ray.direction).Magnitude() };
+			const float thc{ sqrtf(sphere.radius * sphere.radius + od * od) };
+			const float t{ tca - thc };
 
-			const float discriminant{ B * B - 4 * A * C };
-
-			// no hit if discriminant is 0
-			hitRecord.didHit = discriminant > 0;
-
-			if (!hitRecord.didHit)
+			if (t < 0)
 				return false;
-
-			const float tMin{ 0.0001f };
-			const float tMax{ 10000 }; //const float tMax{ FLT_MAX };
-			float t{};
-
-			t = (-B - sqrt(discriminant)) / (2 * A);
-
-			if (t < tMin && t > tMax)
-				t = (-B + sqrt(discriminant)) / (2 * A);
-
-			hitRecord.origin = ray.origin + t * originVec;
-
+			
+			hitRecord.didHit = true;
+			hitRecord.origin = ray.origin + t * ray.direction;
 			return true;
 		}
 
