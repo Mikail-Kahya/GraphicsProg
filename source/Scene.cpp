@@ -40,11 +40,6 @@ namespace dae {
 				temp = closestHit;
 		}
 
-		closestHit = temp;
-
-		if (temp.didHit)
-			return;
-
 		for (const Plane& plane : m_PlaneGeometries)
 		{
 			GeometryUtils::HitTest_Plane(plane, ray, closestHit);

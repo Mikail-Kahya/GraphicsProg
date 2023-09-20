@@ -64,8 +64,17 @@ namespace dae
 			//todo W1
 			// assert(false && "No Implemented Yet!");
 
+			// calculate dot between ray and normal
+			const float unitProjection{ Vector3::Dot(ray.direction, plane.normal) };
+
+			// if ray is coming from behind, ignore
+			if (unitProjection > 0)
+				return false;
+
 			// calculate the distance to the intersection
-			const float t{ Vector3::Dot((plane.origin - ray.origin) , plane.normal) / Vector3::Dot(ray.direction, plane.normal) };
+			const float height{ Vector3::Dot((plane.origin - ray.origin) , plane.normal) };
+
+			const float t{ height / unitProjection };
 
 			// check distance in range
 			hitRecord.didHit = t > ray.min && t < ray.max;

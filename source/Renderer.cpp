@@ -31,15 +31,15 @@ void Renderer::Render(Scene* pScene) const
 	// Test sphere
 	Sphere testSphere{ {0.f,0.f,100}, 50, 0};
 
-	for (int px{ }; px < m_Width; ++px)
+	for (float px{ 0.5f }; px < m_Width; ++px)
 	{
-		for (int py{ }; py < m_Height; ++py)
+		for (float py{ 0.5f }; py < m_Height; ++py)
 		{
-			const float x{ (2 * (px + 0.5f) / m_Width - 1) * aspectRatio };
-			const float y{ 1 - 2 * (py + 0.5f) / m_Height };
+			const float x{ (2 * px / m_Width - 1) * aspectRatio };
+			const float y{ 1 - 2 * py / m_Height };
 
 			Vector3 rayDirection{ x, y, 1};
-			//rayDirection.Normalize();
+			rayDirection.Normalize();
 
 			Ray viewRay{ {0,0,0}, rayDirection };
 
@@ -55,7 +55,7 @@ void Renderer::Render(Scene* pScene) const
 			// Update Color in Buffer
 			finalColor.MaxToOne();
 
-			m_pBufferPixels[px + (py * m_Width)] = SDL_MapRGB(m_pBuffer->format,
+			m_pBufferPixels[int(px) + (int(py) * m_Width)] = SDL_MapRGB(m_pBuffer->format,
 				static_cast<uint8_t>(finalColor.r * 255),
 				static_cast<uint8_t>(finalColor.g * 255),
 				static_cast<uint8_t>(finalColor.b * 255));
