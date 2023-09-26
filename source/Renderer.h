@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "DataTypes.h"
+
 struct SDL_Window;
 struct SDL_Surface;
 
@@ -24,6 +26,7 @@ namespace dae
 		bool SaveBufferToImage() const;
 
 	private:
+
 		SDL_Window* m_pWindow{};
 
 		SDL_Surface* m_pBuffer{};

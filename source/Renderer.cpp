@@ -44,7 +44,7 @@ void Renderer::Render(Scene* pScene) const
 			Vector3 rayDirection{ x, y, 1};
 			rayDirection.Normalize();
 
-			Ray viewRay{ camera.origin, rayDirection };
+			Ray viewRay{ camera.origin, cameraToWorld.TransformVector(rayDirection) };
 
 			ColorRGB finalColor{};
 
