@@ -172,6 +172,8 @@ namespace dae {
 	{
 		m_Camera.origin = { 0.f, 3.f, -9.f };
 		m_Camera.fovAngle = 45.f;
+		m_Camera.forward = { 0.266f, -0.453f, 0.86f };
+
 
 		// Default: Material id0 >> SolidColor Material (RED)
 		constexpr unsigned char matId_Solid_Red = 0;

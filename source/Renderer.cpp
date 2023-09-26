@@ -29,6 +29,7 @@ void Renderer::Render(Scene* pScene) const
 
 	const float aspectRatio{ m_Width / float(m_Height) };
 	const float FOV{ tanf(TO_RADIANS * camera.fovAngle / 2) };
+
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 	// Test sphere
 	// Sphere testSphere{ {0.f,0.f,100}, 50, 0};
@@ -39,12 +40,13 @@ void Renderer::Render(Scene* pScene) const
 
 		for (float py{ 0.5f }; py < m_Height; ++py)
 		{
-			const float y{ 1 - 2 * py / m_Height * FOV };
+			const float y{ (1 - 2 * py / m_Height) * FOV };
 
 			Vector3 rayDirection{ x, y, 1};
+			rayDirection = cameraToWorld.TransformVector(rayDirection);
 			rayDirection.Normalize();
 
-			Ray viewRay{ camera.origin, cameraToWorld.TransformVector(rayDirection) };
+			Ray viewRay{ camera.origin, rayDirection };
 
 			ColorRGB finalColor{};
 
