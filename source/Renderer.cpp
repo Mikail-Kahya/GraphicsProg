@@ -28,21 +28,23 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 
 	const float aspectRatio{ m_Width / float(m_Height) };
+	const float FOV{ tanf(TO_RADIANS * camera.fovAngle / 2) };
+	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 	// Test sphere
-	//Sphere testSphere{ {0.f,0.f,100}, 50, 0};
+	// Sphere testSphere{ {0.f,0.f,100}, 50, 0};
 
 	for (float px{ 0.5f }; px < m_Width; ++px)
 	{
-		const float x{ (2 * px / m_Width - 1) * aspectRatio };
+		const float x{ (2 * px / m_Width - 1) * aspectRatio * FOV };
 
 		for (float py{ 0.5f }; py < m_Height; ++py)
 		{
-			const float y{ 1 - 2 * py / m_Height };
+			const float y{ 1 - 2 * py / m_Height * FOV };
 
 			Vector3 rayDirection{ x, y, 1};
 			rayDirection.Normalize();
 
-			Ray viewRay{ {0,0,0}, rayDirection };
+			Ray viewRay{ camera.origin, rayDirection };
 
 			ColorRGB finalColor{};
 
