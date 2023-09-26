@@ -17,7 +17,7 @@ namespace dae
 
 			// d = ray.direction
 
-			const Vector3 cameraToSphere{ ray.origin - sphere.origin };
+			const Vector3 cameraToSphere{ ray.origin - sphere.origin };	
 			const float a{ Vector3::Dot(ray.direction, ray.direction) };
 			const float b{ Vector3::Dot(2 * ray.direction, cameraToSphere) };
 			const float c{ Vector3::Dot(cameraToSphere, cameraToSphere) - Square(sphere.radius) };
@@ -68,7 +68,7 @@ namespace dae
 			const float unitProjection{ Vector3::Dot(ray.direction, plane.normal) };
 
 			// if ray is coming from behind, ignore
-			if (unitProjection > 0)
+			if (unitProjection >= 0)
 				return false;
 
 			// calculate the distance to the intersection

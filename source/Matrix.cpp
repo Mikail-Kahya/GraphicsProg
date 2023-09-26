@@ -105,8 +105,12 @@ namespace dae {
 	Matrix Matrix::CreateTranslation(float x, float y, float z)
 	{
 		//todo W2
-		assert(false && "Not Implemented Yet");
-		return {};
+		return {
+			Vector4{Vector3::UnitX, 0},
+			Vector4{Vector3::UnitY ,0},
+			Vector4{Vector3::UnitZ, 0},
+			Vector4{x,y, z, 1}
+		};
 	}
 
 	Matrix Matrix::CreateTranslation(const Vector3& t)
