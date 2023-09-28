@@ -124,8 +124,8 @@ namespace dae {
 
 		return {
 			{Vector3::UnitX, 0},
-			{0, cosf(pitch), -sinf(pitch), 0},
-			{0, sinf(pitch), cosf(pitch) , 0},
+			{0, cosf(pitch), sinf(pitch), 0},
+			{0, -sinf(pitch), cosf(pitch) , 0},
 			{0,0,0,1}
 		};
 	}

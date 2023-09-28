@@ -29,6 +29,7 @@ void Renderer::Render(Scene* pScene) const
 
 	const float aspectRatio{ m_Width / float(m_Height) };
 	const float FOV{ tanf(TO_RADIANS * camera.fovAngle / 2) };
+	const float epsilon{ 0.001f };
 
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 	// Test sphere
@@ -46,13 +47,27 @@ void Renderer::Render(Scene* pScene) const
 			rayDirection = cameraToWorld.TransformVector(rayDirection);
 			rayDirection.Normalize();
 
-			Ray viewRay{ camera.origin, rayDirection };
+			const Ray viewRay{ camera.origin, rayDirection };
 
 			ColorRGB finalColor{};
 
 			// hitinfo
+			bool isShaded{ false };
 			HitRecord closestHit{};
 			pScene->GetClosestHit(viewRay, closestHit);
+
+			for (const Light& light : lights)
+			{
+				// get light to closesthit
+				const Vector3 lightDirection{ closestHit.origin - light.origin };
+				const float length{ lightDirection.Magnitude() - epsilon };
+				Ray lightRay{light.origin, lightDirection.Normalized(), 0.0001f, length};
+
+				// if it hits, the object is being blocked => darken
+				isShaded = pScene->DoesHit(lightRay);
+				if (isShaded)
+					break;
+			}
 
 			//Plane testPlane{ {0.f, -50.f, 0.f}, {0.f, 1.f, 0.f}, 0 };
 			//GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
@@ -60,6 +75,8 @@ void Renderer::Render(Scene* pScene) const
 			if (closestHit.didHit)
 			{
 				finalColor = materials[closestHit.materialIndex]->Shade();
+				if (isShaded)
+					finalColor *= 0.5f;
 
 				//const float scaledT{ closestHit.t / 500.f };
 				//finalColor = { scaledT,scaledT,scaledT };

@@ -32,7 +32,7 @@ namespace dae
 			if (!hitRecord.didHit)
 				return false;
 
-			t = (-b - sqrtf(discriminant)) / 2 * a;
+			t = (-b - sqrtf(discriminant)) * 0.5f * a;
 
 			// check if inside of min and max
 			hitRecord.didHit = t > ray.min && t < ray.max;
@@ -42,7 +42,7 @@ namespace dae
 
 
 			if (t < ray.min)
-				t = (-b + sqrtf(discriminant)) / 2 * a;
+				t = (-b + sqrtf(discriminant)) * 0.5f * a;
 
 			hitRecord.origin = ray.origin + t * ray.direction;
 			hitRecord.t = t;
@@ -131,8 +131,9 @@ namespace dae
 		inline Vector3 GetDirectionToLight(const Light& light, const Vector3 origin)
 		{
 			//todo W3
-			assert(false && "No Implemented Yet!");
-			return {};
+			//assert(false && "No Implemented Yet!");
+
+			return { light.origin - origin };
 		}
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
