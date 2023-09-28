@@ -64,14 +64,17 @@ namespace dae
 			//assert(false && "Not Implemented Yet");
 
 			// mouseState: left == 1, middle == 2, right == 3
-			if (mouseState == 1)
+
+			switch(mouseState)
 			{
+			case SDL_BUTTON(1):
 				MouseMove(mouseY, deltaTime);
-			}
-			else
-			{
+				Rotate(mouseX, 0, deltaTime);
+				break;
+			case SDL_BUTTON(3):
 				Move(pKeyboardState, mouseState, mouseY, deltaTime);
 				Rotate(mouseX, mouseY, deltaTime);
+				break;
 			}
 		}
 
