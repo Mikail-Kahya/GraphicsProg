@@ -39,8 +39,6 @@ namespace dae
 
 		bool showShadows{ true };
 
-
-
 		Matrix CalculateCameraToWorld()
 		{
 			//todo: W2
@@ -83,6 +81,9 @@ namespace dae
 				Rotate(mouseX, mouseY, deltaTime);
 				break;
 			}
+
+			if (pKeyboardState[SDL_SCANCODE_F2])
+				showShadows = !showShadows;
 		}
 
 	private:

@@ -111,5 +111,9 @@ namespace dae
 		Scene_W3& operator=(Scene_W3&&) noexcept = delete;
 
 		void Initialize() override;
+
+	private:
+		void Final();
+		void Intermediary();
 	};
 }
