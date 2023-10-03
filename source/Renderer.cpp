@@ -32,7 +32,10 @@ void Renderer::Render(Scene* pScene) const
 	const float epsilon{ 0.001f };
 
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
-	
+
+	// W3 steps to take
+	// 1. Calculate observed area (light cone) for each light
+
 
 	for (float px{ 0.5f }; px < m_Width; ++px)
 	{
@@ -55,24 +58,23 @@ void Renderer::Render(Scene* pScene) const
 			HitRecord closestHit{};
 			pScene->GetClosestHit(viewRay, closestHit);
 
-			for (const Light& light : lights)
-			{
-				// get light to closesthit
-				const Vector3 lightDirection{ closestHit.origin - light.origin };
-				const float length{ lightDirection.Magnitude() - epsilon };
-				Ray lightRay{light.origin, lightDirection.Normalized(), 0.0001f, length};
-
-				// if it hits, the object is being blocked => darken
-				isShaded = pScene->DoesHit(lightRay);
-				if (isShaded)
-					break;
-			}
-
-			//Plane testPlane{ {0.f, -50.f, 0.f}, {0.f, 1.f, 0.f}, 0 };
-			//GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
-
 			if (closestHit.didHit)
 			{
+				for (const Light& light : lights)
+				{
+					// get light to closesthit
+					const Vector3 lightDirection{ closestHit.origin - light.origin };
+					const float length{ lightDirection.Magnitude() - epsilon };
+					Ray lightRay{light.origin, lightDirection.Normalized(), 0.0001f, length};
+
+					const float observedArea{ GetObservedArea(lightDirection, closestHit.normal) };
+
+					// if it hits, the object is being blocked => darken
+					isShaded = pScene->DoesHit(lightRay);
+					if (isShaded)
+						break;
+				}
+
 				finalColor = materials[closestHit.materialIndex]->Shade();
 				if (isShaded)
 					finalColor *= 0.5f;
@@ -99,4 +101,11 @@ void Renderer::Render(Scene* pScene) const
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
+}
+
+float Renderer::GetObservedArea(const Vector3& lightDirection, const Vector3& surfaceNormal) const
+{
+	const float dot{ Vector3::Dot(lightDirection, surfaceNormal) };
+
+	return dot / lightDirection.Magnitude();
 }

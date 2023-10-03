@@ -13,8 +13,6 @@ namespace dae
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W1
-			//assert(false && "No Implemented Yet!");
-
 			// d = ray.direction
 
 			const Vector3 cameraToSphere{ ray.origin - sphere.origin };	
@@ -45,6 +43,7 @@ namespace dae
 				t = (-b + sqrtf(discriminant)) * 0.5f * a;
 
 			hitRecord.origin = ray.origin + t * ray.direction;
+			hitRecord.normal = (hitRecord.origin - sphere.origin).Normalized();
 			hitRecord.t = t;
 			hitRecord.materialIndex = sphere.materialIndex;
 
@@ -62,7 +61,6 @@ namespace dae
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W1
-			// assert(false && "No Implemented Yet!");
 
 			// calculate dot between ray and normal
 			const float unitProjection{ Vector3::Dot(ray.direction, plane.normal) };
@@ -82,6 +80,7 @@ namespace dae
 				return false;
 
 			hitRecord.origin = ray.origin + t * ray.direction;
+			hitRecord.normal = plane.normal;
 			hitRecord.materialIndex = plane.materialIndex;
 			hitRecord.t = t;
 
