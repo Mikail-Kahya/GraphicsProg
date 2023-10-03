@@ -21,6 +21,17 @@ Renderer::Renderer(SDL_Window * pWindow) :
 	m_pBufferPixels = static_cast<uint32_t*>(m_pBuffer->pixels);
 }
 
+void Renderer::Update()
+{
+	const Uint8* keyStatesPtr{ SDL_GetKeyboardState(nullptr) };
+
+	const bool temp{ m_ButtonPressed };
+	m_ButtonPressed = keyStatesPtr[SDL_SCANCODE_F2];
+
+	if (temp != m_ButtonPressed && m_ButtonPressed)
+		m_ShowShadows = !m_ShowShadows;
+}
+
 void Renderer::Render(Scene* pScene) const
 {
 	Camera& camera = pScene->GetCamera();
@@ -29,7 +40,6 @@ void Renderer::Render(Scene* pScene) const
 
 	const float aspectRatio{ m_Width / float(m_Height) };
 	const float FOV{ tanf(TO_RADIANS * camera.fovAngle / 2) };
-	const float epsilon{ 0.001f };
 
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
 
@@ -65,7 +75,7 @@ void Renderer::Render(Scene* pScene) const
 				{
 					// get light to closesthit
 					const Vector3 lightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
-					const float length{ lightDirection.Magnitude() - epsilon };
+					const float length{ lightDirection.Magnitude() - FLT_EPSILON };
 					Ray lightRay{closestHit.origin + closestHit.normal * FLT_EPSILON, lightDirection.Normalized(), FLT_EPSILON, length};
 
 					// if it hits, the object is being blocked => darken
@@ -77,7 +87,7 @@ void Renderer::Render(Scene* pScene) const
 					finalColor += LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
 
 
-					if (pScene->DoesHit(lightRay))
+					if (pScene->DoesHit(lightRay) && m_ShowShadows)
 					{
 						finalColor *= 0.5f;
 					}

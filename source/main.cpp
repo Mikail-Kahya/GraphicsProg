@@ -60,6 +60,7 @@ int main(int argc, char* args[])
 	float printTimer = 0.f;
 	bool isLooping = true;
 	bool takeScreenshot = false;
+	
 	while (isLooping)
 	{
 		//--------- Get input events ---------
@@ -80,6 +81,7 @@ int main(int argc, char* args[])
 
 		//--------- Update ---------
 		pScene->Update(pTimer);
+		pRenderer->Update();
 
 		//--------- Render ---------
 		pRenderer->Render(pScene);

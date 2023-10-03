@@ -19,11 +19,6 @@ namespace dae
 		{
 		}
 
-		enum class ViewMethod
-		{
-			
-		};
-
 		Vector3 origin{};
 		float fovAngle{ 90.f};
 		float movementSpeedScalar{ 1.f };
@@ -36,8 +31,6 @@ namespace dae
 		float totalYaw{0.f};
 
 		Matrix cameraToWorld{};
-
-		bool showShadows{ true };
 
 		Matrix CalculateCameraToWorld()
 		{
@@ -81,9 +74,6 @@ namespace dae
 				Rotate(mouseX, mouseY, deltaTime);
 				break;
 			}
-
-			if (pKeyboardState[SDL_SCANCODE_F2])
-				showShadows = !showShadows;
 		}
 
 	private:

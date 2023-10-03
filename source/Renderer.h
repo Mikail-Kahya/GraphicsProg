@@ -11,6 +11,11 @@ namespace dae
 {
 	class Scene;
 
+	enum class ViewMethod
+	{
+
+	};
+
 	class Renderer final
 	{
 	public:
@@ -22,6 +27,7 @@ namespace dae
 		Renderer& operator=(const Renderer&) = delete;
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
+		void Update();
 		void Render(Scene* pScene) const;
 		bool SaveBufferToImage() const;
 
@@ -33,5 +39,7 @@ namespace dae
 
 		int m_Width{};
 		int m_Height{};
+		bool m_ShowShadows{ true };
+		bool m_ButtonPressed{ false };
 	};
 }
