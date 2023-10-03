@@ -36,7 +36,7 @@ namespace dae
 		{
 			//todo: W3
 			const float cosAngle{ Vector3::Dot(Vector3::Reflect(l, n), v) };
-			return ks * powf(cosAngle, 2) * colors::White;
+			return ks * powf(cosAngle, exp) * colors::White;
 		}
 
 		/**

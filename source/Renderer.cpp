@@ -67,9 +67,13 @@ void Renderer::Render(Scene* pScene) const
 					const float length{ lightDirection.Magnitude() - FLT_EPSILON };
 					Ray lightRay{closestHit.origin + closestHit.normal * FLT_EPSILON, lightDirection.Normalized(), FLT_EPSILON, length};
 
+					// if it hits, the object is being blocked => darken
+					if (pScene->DoesHit(lightRay) && m_EnableShadows)
+						continue;
+
 					const float observedArea{ Vector3::Dot(lightRay.direction, closestHit.normal) };
 					const ColorRGB radiance{ LightUtils::GetRadiance(light, closestHit.origin) };
-					const ColorRGB materialShading{ material->Shade(closestHit, lightRay.direction, viewRay.direction) };
+					const ColorRGB materialShading{ material->Shade(closestHit, -lightRay.direction, viewRay.direction) };
 					ColorRGB lighting{};
 
 					if (observedArea < 0)
@@ -90,10 +94,6 @@ void Renderer::Render(Scene* pScene) const
 						lighting = radiance * materialShading * observedArea;
 						break;
 					}
-
-					// if it hits, the object is being blocked => darken
-					if (pScene->DoesHit(lightRay) && m_EnableShadows)
-						continue;
 
 					finalColor += lighting;
 				}
