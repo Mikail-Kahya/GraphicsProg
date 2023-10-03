@@ -14,20 +14,13 @@ namespace dae
 		static ColorRGB Lambert(float kd, const ColorRGB& cd)
 		{
 			//todo: W3
-			
 			return cd * kd / PI;
 		}
 
 		static ColorRGB Lambert(const ColorRGB& kd, const ColorRGB& cd)
 		{
 			//todo: W3
-			return {
-				ColorRGB{kd.r * cd.r,
-				kd.g * cd.g,
-				kd.b * cd.b
-					} / PI
-
-			};
+			return cd * kd / PI;
 		}
 
 		/**
@@ -42,8 +35,8 @@ namespace dae
 		static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
 		{
 			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			const float cosAngle{ Vector3::Dot(Vector3::Reflect(l, n), v) };
+			return ks * powf(cosAngle, 2) * colors::White;
 		}
 
 		/**
@@ -56,7 +49,7 @@ namespace dae
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
 			//todo: W3
-			assert(false && "Not Implemented Yet");
+			
 			return {};
 		}
 
