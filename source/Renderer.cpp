@@ -78,9 +78,7 @@ void Renderer::Render(Scene* pScene) const
 					switch (m_LightingMode)
 					{
 					case LightingMode::ObservedArea:
-						finalColor = colors::White;
-						lighting = colors::White * observedArea;
-						finalColor += lighting;
+						finalColor += colors::White * observedArea;
 						continue;
 					case LightingMode::Radiance:
 						lighting = radiance;

@@ -115,5 +115,6 @@ namespace dae
 	private:
 		void Final();
 		void Intermediary();
+		void LambertPhong();
 	};
 }
