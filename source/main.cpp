@@ -42,13 +42,13 @@ int main(int argc, char* args[])
 		return 1;
 
 	// remove mouse
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	//SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//Initialize "framework"
 	const auto pTimer = new Timer();
 	const auto pRenderer = new Renderer(pWindow);
 
-	const auto pScene = new Scene_W2();
+	const auto pScene = new Scene_W3();
 	pScene->Initialize();
 
 	//Start loop

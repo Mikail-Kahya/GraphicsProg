@@ -32,8 +32,7 @@ void Renderer::Render(Scene* pScene) const
 	const float epsilon{ 0.001f };
 
 	const Matrix cameraToWorld = camera.CalculateCameraToWorld();
-	// Test sphere
-	// Sphere testSphere{ {0.f,0.f,100}, 50, 0};
+	
 
 	for (float px{ 0.5f }; px < m_Width; ++px)
 	{
