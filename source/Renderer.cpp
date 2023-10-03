@@ -64,10 +64,11 @@ void Renderer::Render(Scene* pScene) const
 					finalColor = { 1,1,1 };
 					break;
 				case LightingMode::Radiance: 
+				case LightingMode::BRDF: 
+				case LightingMode::Combined: 
 					finalColor = materials[closestHit.materialIndex]->Shade();
 					break;
-				case LightingMode::BRDF: break;
-				case LightingMode::Combined: break;
+
 				}
 
 				for (const Light& light : lights)
@@ -77,31 +78,32 @@ void Renderer::Render(Scene* pScene) const
 					const float length{ lightDirection.Magnitude() - FLT_EPSILON };
 					Ray lightRay{closestHit.origin + closestHit.normal * FLT_EPSILON, lightDirection.Normalized(), FLT_EPSILON, length};
 
-					// if it hits, the object is being blocked => darken
-
 					const float observedArea{ Vector3::Dot(lightRay.direction, closestHit.normal) };
+					ColorRGB lighting{};
+
+					if (observedArea < 0)
+						continue;
 
 					switch (m_LightingMode)
 					{
 					case LightingMode::ObservedArea:
-						if (observedArea < 0)
-							continue;
-						finalColor += colors::White * observedArea;
+						lighting = colors::White * observedArea;
 						break;
 					case LightingMode::Radiance:
-						finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+						lighting = LightUtils::GetRadiance(light, closestHit.origin);
 						break;
-					case LightingMode::BRDF: break;
-					case LightingMode::Combined:;
-						if (observedArea < 0)
-							continue;
-						finalColor += LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
+					case LightingMode::BRDF:
+						break;
+					case LightingMode::Combined:
+						lighting = LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
 						break;
 					}
 
-
+					// if it hits, the object is being blocked => darken
 					if (pScene->DoesHit(lightRay) && m_EnableShadows)
-						finalColor *= 0.5f;
+						continue;
+
+					finalColor += lighting;
 				}
 			}
 
@@ -129,7 +131,24 @@ void Renderer::CycleLightMode()
 {
 	int modeIndex{ int(m_LightingMode) };
 	++modeIndex;
-	modeIndex %= int(LightingMode::Combined);
+	modeIndex %= int(LightingMode::Combined) + 1;
 
 	m_LightingMode = LightingMode(modeIndex);
+
+	switch (m_LightingMode)
+	{
+	case LightingMode::ObservedArea:
+
+		std::cout << "ObservedArea\n";
+		break;
+	case LightingMode::Radiance:
+		std::cout << "Radiance\n";
+		break;
+	case LightingMode::BRDF:
+		std::cout << "BRDF\n";
+		break;
+	case LightingMode::Combined:
+		std::cout << "Combined\n";
+		break;
+	}
 }
