@@ -76,12 +76,22 @@ int main(int argc, char* args[])
 				if(e.key.keysym.scancode == SDL_SCANCODE_X)
 					takeScreenshot = true;
 				break;
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym)
+				{
+					case SDLK_F2:
+						pRenderer->ToggleShadows();
+						break;
+					case SDLK_F3:
+					pRenderer->CycleLightMode();
+						break;
+				}
+				break;
 			}
 		}
 
 		//--------- Update ---------
 		pScene->Update(pTimer);
-		pRenderer->Update();
 
 		//--------- Render ---------
 		pRenderer->Render(pScene);

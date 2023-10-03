@@ -21,17 +21,6 @@ Renderer::Renderer(SDL_Window * pWindow) :
 	m_pBufferPixels = static_cast<uint32_t*>(m_pBuffer->pixels);
 }
 
-void Renderer::Update()
-{
-	const Uint8* keyStatesPtr{ SDL_GetKeyboardState(nullptr) };
-
-	const bool temp{ m_ButtonPressed };
-	m_ButtonPressed = keyStatesPtr[SDL_SCANCODE_F2];
-
-	if (temp != m_ButtonPressed && m_ButtonPressed)
-		m_ShowShadows = !m_ShowShadows;
-}
-
 void Renderer::Render(Scene* pScene) const
 {
 	Camera& camera = pScene->GetCamera();
@@ -69,7 +58,17 @@ void Renderer::Render(Scene* pScene) const
 
 			if (closestHit.didHit)
 			{
-				finalColor = materials[closestHit.materialIndex]->Shade();
+				switch (m_LightingMode)
+				{
+				case LightingMode::ObservedArea:
+					finalColor = { 1,1,1 };
+					break;
+				case LightingMode::Radiance: 
+					finalColor = materials[closestHit.materialIndex]->Shade();
+					break;
+				case LightingMode::BRDF: break;
+				case LightingMode::Combined: break;
+				}
 
 				for (const Light& light : lights)
 				{
@@ -81,16 +80,28 @@ void Renderer::Render(Scene* pScene) const
 					// if it hits, the object is being blocked => darken
 
 					const float observedArea{ Vector3::Dot(lightRay.direction, closestHit.normal) };
-					if (observedArea < 0)
-						continue;
 
-					finalColor += LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
-
-
-					if (pScene->DoesHit(lightRay) && m_ShowShadows)
+					switch (m_LightingMode)
 					{
-						finalColor *= 0.5f;
+					case LightingMode::ObservedArea:
+						if (observedArea < 0)
+							continue;
+						finalColor += colors::White * observedArea;
+						break;
+					case LightingMode::Radiance:
+						finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+						break;
+					case LightingMode::BRDF: break;
+					case LightingMode::Combined:;
+						if (observedArea < 0)
+							continue;
+						finalColor += LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
+						break;
 					}
+
+
+					if (pScene->DoesHit(lightRay) && m_EnableShadows)
+						finalColor *= 0.5f;
 				}
 			}
 
@@ -112,4 +123,13 @@ void Renderer::Render(Scene* pScene) const
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
+}
+
+void Renderer::CycleLightMode()
+{
+	int modeIndex{ int(m_LightingMode) };
+	++modeIndex;
+	modeIndex %= int(LightingMode::Combined);
+
+	m_LightingMode = LightingMode(modeIndex);
 }

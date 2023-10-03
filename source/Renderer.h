@@ -11,11 +11,6 @@ namespace dae
 {
 	class Scene;
 
-	enum class ViewMethod
-	{
-
-	};
-
 	class Renderer final
 	{
 	public:
@@ -27,11 +22,21 @@ namespace dae
 		Renderer& operator=(const Renderer&) = delete;
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
-		void Update();
 		void Render(Scene* pScene) const;
 		bool SaveBufferToImage() const;
 
+		void CycleLightMode();
+		void ToggleShadows() { m_EnableShadows = !m_EnableShadows; }
+
 	private:
+		enum class LightingMode
+		{
+			ObservedArea,	// Lambert Cosine Law
+			Radiance,		// Incident Radiance
+			BRDF,			// Scattering of the light
+			Combined		// ObservedArea * Radiance * BRDF
+		};
+
 		SDL_Window* m_pWindow{};
 
 		SDL_Surface* m_pBuffer{};
@@ -39,7 +44,7 @@ namespace dae
 
 		int m_Width{};
 		int m_Height{};
-		bool m_ShowShadows{ true };
-		bool m_ButtonPressed{ false };
+		bool m_EnableShadows{ true };
+		LightingMode m_LightingMode{ LightingMode::Combined };
 	};
 }
