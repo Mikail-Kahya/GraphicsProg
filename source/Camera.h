@@ -19,6 +19,10 @@ namespace dae
 		{
 		}
 
+		enum class ViewMethod
+		{
+			
+		};
 
 		Vector3 origin{};
 		float fovAngle{ 90.f};
@@ -32,6 +36,9 @@ namespace dae
 		float totalYaw{0.f};
 
 		Matrix cameraToWorld{};
+
+		bool showShadows{ true };
+
 
 
 		Matrix CalculateCameraToWorld()

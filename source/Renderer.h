@@ -26,10 +26,6 @@ namespace dae
 		bool SaveBufferToImage() const;
 
 	private:
-		bool LightRenderer(const HitRecord& closestHit, Scene* scenePtr, const auto& lights) const;
-
-		float GetObservedArea(const Vector3& lightDirection, const Vector3& surfaceNormal) const;
-
 		SDL_Window* m_pWindow{};
 
 		SDL_Surface* m_pBuffer{};

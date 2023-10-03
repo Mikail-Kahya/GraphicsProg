@@ -54,33 +54,34 @@ void Renderer::Render(Scene* pScene) const
 			ColorRGB finalColor{};
 
 			// hitinfo
-			bool isShaded{ false };
 			HitRecord closestHit{};
 			pScene->GetClosestHit(viewRay, closestHit);
 
 			if (closestHit.didHit)
 			{
+				finalColor = materials[closestHit.materialIndex]->Shade();
+
 				for (const Light& light : lights)
 				{
 					// get light to closesthit
-					const Vector3 lightDirection{ closestHit.origin - light.origin };
+					const Vector3 lightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
 					const float length{ lightDirection.Magnitude() - epsilon };
-					Ray lightRay{light.origin, lightDirection.Normalized(), 0.0001f, length};
-
-					const float observedArea{ GetObservedArea(lightDirection, closestHit.normal) };
+					Ray lightRay{closestHit.origin + closestHit.normal * FLT_EPSILON, lightDirection.Normalized(), FLT_EPSILON, length};
 
 					// if it hits, the object is being blocked => darken
-					isShaded = pScene->DoesHit(lightRay);
-					if (isShaded)
-						break;
+
+					const float observedArea{ Vector3::Dot(lightRay.direction, closestHit.normal) };
+					if (observedArea < 0)
+						continue;
+
+					finalColor += LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
+
+
+					if (pScene->DoesHit(lightRay))
+					{
+						finalColor *= 0.5f;
+					}
 				}
-
-				finalColor = materials[closestHit.materialIndex]->Shade();
-				if (isShaded)
-					finalColor *= 0.5f;
-
-				//const float scaledT{ closestHit.t / 500.f };
-				//finalColor = { scaledT,scaledT,scaledT };
 			}
 
 			// Update Color in Buffer
@@ -101,11 +102,4 @@ void Renderer::Render(Scene* pScene) const
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
-}
-
-float Renderer::GetObservedArea(const Vector3& lightDirection, const Vector3& surfaceNormal) const
-{
-	const float dot{ Vector3::Dot(lightDirection, surfaceNormal) };
-
-	return dot / lightDirection.Magnitude();
 }
