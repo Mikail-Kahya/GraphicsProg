@@ -58,18 +58,7 @@ void Renderer::Render(Scene* pScene) const
 
 			if (closestHit.didHit)
 			{
-				switch (m_LightingMode)
-				{
-				case LightingMode::ObservedArea:
-					finalColor = { 1,1,1 };
-					break;
-				case LightingMode::Radiance: 
-				case LightingMode::BRDF: 
-				case LightingMode::Combined: 
-					finalColor = materials[closestHit.materialIndex]->Shade();
-					break;
-
-				}
+				Material* material{ materials[closestHit.materialIndex] };
 
 				for (const Light& light : lights)
 				{
@@ -79,6 +68,8 @@ void Renderer::Render(Scene* pScene) const
 					Ray lightRay{closestHit.origin + closestHit.normal * FLT_EPSILON, lightDirection.Normalized(), FLT_EPSILON, length};
 
 					const float observedArea{ Vector3::Dot(lightRay.direction, closestHit.normal) };
+					const ColorRGB radiance{ LightUtils::GetRadiance(light, closestHit.origin) };
+					const ColorRGB materialShading{ material->Shade(closestHit, lightRay.direction, viewRay.direction) };
 					ColorRGB lighting{};
 
 					if (observedArea < 0)
@@ -87,15 +78,17 @@ void Renderer::Render(Scene* pScene) const
 					switch (m_LightingMode)
 					{
 					case LightingMode::ObservedArea:
+						finalColor = colors::White;
 						lighting = colors::White * observedArea;
 						break;
 					case LightingMode::Radiance:
-						lighting = LightUtils::GetRadiance(light, closestHit.origin);
+						lighting = radiance;
 						break;
 					case LightingMode::BRDF:
+						lighting = materialShading;
 						break;
 					case LightingMode::Combined:
-						lighting = LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
+						lighting = radiance * materialShading * observedArea;
 						break;
 					}
 
