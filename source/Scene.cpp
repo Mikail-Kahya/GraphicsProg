@@ -214,8 +214,8 @@ namespace dae {
 
 	void Scene_W3::Initialize()
 	{
-		Intermediary();
-		//Final();
+		//Intermediary();
+		Final();
 	}
 
 	void Scene_W3::Final()

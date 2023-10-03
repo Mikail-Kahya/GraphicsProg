@@ -80,7 +80,8 @@ void Renderer::Render(Scene* pScene) const
 					case LightingMode::ObservedArea:
 						finalColor = colors::White;
 						lighting = colors::White * observedArea;
-						break;
+						finalColor += lighting;
+						continue;
 					case LightingMode::Radiance:
 						lighting = radiance;
 						break;
