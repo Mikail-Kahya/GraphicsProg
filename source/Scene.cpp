@@ -215,8 +215,8 @@ namespace dae {
 	void Scene_W3::Initialize()
 	{
 		//Intermediary();
-		LambertPhong();
-		//Final();
+		//LambertPhong();
+		Final();
 	}
 
 	void Scene_W3::Final()

@@ -49,8 +49,11 @@ namespace dae
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
 			//todo: W3
-			
-			return {};
+
+			const float a{ powf(1 - Vector3::Dot(h, v), 5) };
+			const ColorRGB inverseAlbedo{ colors::White - f0 };
+
+			return f0 + inverseAlbedo * a;
 		}
 
 		/**
@@ -63,8 +66,11 @@ namespace dae
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
 			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			const float alphaSqr{ powf(roughness, 4) };
+			const float cosAngleSqr{ powf(Vector3::Dot(n,h),2) };
+
+			// fresnel function
+			return alphaSqr / ( PI * powf( cosAngleSqr * (alphaSqr - 1) + 1, 2) );
 		}
 
 
@@ -78,8 +84,11 @@ namespace dae
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
 			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			// 1/8 = 0.125
+			const float k{ powf(roughness + 1, 2) * 0.125f };
+			const float cosAngle{ Vector3::Dot(n,v) };
+
+			return cosAngle / (cosAngle * (1 - k) + k);
 		}
 
 		/**
@@ -93,8 +102,8 @@ namespace dae
 		static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
 		{
 			//todo: W3
-			assert(false && "Not Implemented Yet");
-			return {};
+			const float k{ powf(roughness + 1, 2) * 0.125f };
+			return GeometryFunction_SchlickGGX(n, v, k) * GeometryFunction_SchlickGGX(n, l, k);
 		}
 
 	}
