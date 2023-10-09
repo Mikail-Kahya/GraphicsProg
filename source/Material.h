@@ -121,14 +121,13 @@ namespace dae
 			ColorRGB specular{ normalDistribution * geometry * fresnel };
 			specular /= 4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal);
 			
-			/*if (m_Metalness)
-				return specular;*/
+			if (m_Metalness > FLT_EPSILON)
+				return specular;
 			
 			const ColorRGB kd{ colors::White - fresnel };
 			const ColorRGB diffuse{ BRDF::Lambert(kd, m_Albedo) };
 			
-			
-			return colors::White * geometry;
+			return diffuse + specular;
 		}
 
 	private:
