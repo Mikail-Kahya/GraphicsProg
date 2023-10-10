@@ -63,17 +63,17 @@ void Renderer::Render(Scene* pScene) const
 				for (const Light& light : lights)
 				{
 					// get light to closesthit
-					const Vector3 lightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
-					const float length{ lightDirection.Magnitude() - FLT_EPSILON };
-					Ray lightRay{closestHit.origin + closestHit.normal * FLT_EPSILON, lightDirection.Normalized(), FLT_EPSILON, length};
+					const Vector3 invertedLightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
+					const float length{ invertedLightDirection.Magnitude() - FLT_EPSILON };
+					Ray invertedLightRay{closestHit.origin + closestHit.normal * FLT_EPSILON, invertedLightDirection.Normalized(), FLT_EPSILON, length};
 
 					// if it hits, the object is being blocked => darken
-					if (pScene->DoesHit(lightRay) && m_EnableShadows)
+					if (pScene->DoesHit(invertedLightRay) && m_EnableShadows)
 						continue;
 
-					const float observedArea{ Vector3::Dot(lightRay.direction, closestHit.normal) };
+					const float observedArea{ Vector3::Dot(invertedLightRay.direction, closestHit.normal) };
 					const ColorRGB radiance{ LightUtils::GetRadiance(light, closestHit.origin) };
-					const ColorRGB materialShading{ material->Shade(closestHit, -lightRay.direction, viewRay.direction) };
+					const ColorRGB materialShading{ material->Shade(closestHit, invertedLightRay.direction, -viewRay.direction) };
 					ColorRGB lighting{};
 
 					if (observedArea < 0)

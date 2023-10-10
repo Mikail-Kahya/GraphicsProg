@@ -127,7 +127,7 @@ namespace dae
 			const ColorRGB kd{ colors::White - fresnel };
 			const ColorRGB diffuse{ BRDF::Lambert(kd, m_Albedo) };
 			
-			return diffuse + specular;
+			return diffuse;
 		}
 
 	private:
