@@ -112,18 +112,18 @@ namespace dae
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
 			//todo: W3
-			const Vector3 halfVector{ ((v + l) / 2).Normalized() };
+			const Vector3 halfVector{ ((v + l) * 0.5f).Normalized() };
 
 			const ColorRGB fresnel{ BRDF::FresnelFunction_Schlick(halfVector, v, m_Albedo) };
-			const float normalDistribution{ BRDF::NormalDistribution_GGX(hitRecord.normal, halfVector, m_Roughness) };
-			const float geometry{ BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness) };
-			
-			ColorRGB specular{ normalDistribution * geometry * fresnel };
-			specular /= 4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal);
-			
-			if (m_Metalness > FLT_EPSILON)
-				return specular;
-			
+			//const float normalDistribution{ BRDF::NormalDistribution_GGX(hitRecord.normal, halfVector, m_Roughness) };
+			//const float geometry{ BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness) };
+			//
+			//ColorRGB specular{ normalDistribution * geometry * fresnel };
+			//specular /= 4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal);
+			//
+			//if (m_Metalness > FLT_EPSILON)
+			//	return specular;
+			//
 			const ColorRGB kd{ colors::White - fresnel };
 			const ColorRGB diffuse{ BRDF::Lambert(kd, m_Albedo) };
 			

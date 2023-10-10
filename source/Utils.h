@@ -16,11 +16,10 @@ namespace dae
 			// d = ray.direction
 
 			const Vector3 cameraToSphere{ ray.origin - sphere.origin };	
-			const float a{ Vector3::Dot(ray.direction, ray.direction) };
 			const float b{ Vector3::Dot(2 * ray.direction, cameraToSphere) };
 			const float c{ Vector3::Dot(cameraToSphere, cameraToSphere) - Square(sphere.radius) };
 
-			const float discriminant{ Square(b) - 4 * a * c };
+			const float discriminant{ Square(b) - 4 * c };
 
 			float t{};
 
@@ -30,7 +29,7 @@ namespace dae
 			if (!hitRecord.didHit)
 				return false;
 
-			t = (-b - sqrtf(discriminant)) * 0.5f * a;
+			t = (-b - sqrtf(discriminant)) * 0.5f;
 
 			// check if inside of min and max
 			hitRecord.didHit = t > ray.min && t < ray.max;
@@ -40,7 +39,7 @@ namespace dae
 
 
 			if (t < ray.min)
-				t = (-b + sqrtf(discriminant)) * 0.5f * a;
+				t = (-b + sqrtf(discriminant)) * 0.5f;
 
 			hitRecord.origin = ray.origin + t * ray.direction;
 			hitRecord.normal = (hitRecord.origin - sphere.origin).Normalized();
