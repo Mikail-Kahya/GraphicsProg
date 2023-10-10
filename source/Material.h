@@ -104,9 +104,8 @@ namespace dae
 		Material_CookTorrence(const ColorRGB& albedo, float metalness, float roughness):
 			m_Albedo(albedo), m_Metalness(metalness), m_Roughness(roughness)
 		{
-			const ColorRGB dielectricAlbedo{ 0.04f, 0.04f, 0.04f };
-			if (m_Metalness < FLT_EPSILON)
-				m_Albedo = dielectricAlbedo;
+			const ColorRGB dielectric{ 0.04f, 0.04f, 0.04f };
+			m_F0 = (m_Metalness < FLT_EPSILON) ? dielectric : m_Albedo;
 		}
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
@@ -114,24 +113,22 @@ namespace dae
 			//todo: W3
 			const Vector3 halfVector{ ((v + l) * 0.5f).Normalized() };
 
-			const ColorRGB fresnel{ BRDF::FresnelFunction_Schlick(halfVector, v, m_Albedo) };
-			//const float normalDistribution{ BRDF::NormalDistribution_GGX(hitRecord.normal, halfVector, m_Roughness) };
-			//const float geometry{ BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness) };
-			//
-			//ColorRGB specular{ normalDistribution * geometry * fresnel };
-			//specular /= 4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal);
-			//
-			//if (m_Metalness > FLT_EPSILON)
-			//	return specular;
-			//
-			const ColorRGB kd{ colors::White - fresnel };
+			const ColorRGB fresnel{ BRDF::FresnelFunction_Schlick(halfVector, v, m_F0) };
+			const float normalDistribution{ BRDF::NormalDistribution_GGX(hitRecord.normal, halfVector, m_Roughness) };
+			const float geometry{ BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness) };
+			
+			ColorRGB specular{ normalDistribution * geometry * fresnel };
+			specular /= 4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal);
+
+			const ColorRGB kd = (m_Metalness < FLT_EPSILON) ? colors::White - specular : colors::Black;
 			const ColorRGB diffuse{ BRDF::Lambert(kd, m_Albedo) };
 			
-			return diffuse;
+			return diffuse + specular;
 		}
 
 	private:
 		ColorRGB m_Albedo{0.955f, 0.637f, 0.538f}; //Copper
+		ColorRGB m_F0{};
 		float m_Metalness{1.0f};
 		float m_Roughness{0.1f}; // [1.0 > 0.0] >> [ROUGH > SMOOTH]
 	};
