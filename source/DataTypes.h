@@ -123,12 +123,12 @@ namespace dae
 
 		void CalculateNormals()
 		{
-			assert(false && "No Implemented Yet!");
+			
 		}
 
 		void UpdateTransforms()
 		{
-			assert(false && "No Implemented Yet!");
+			
 			//Calculate Final Transform 
 			//const auto finalTransform = ...
 

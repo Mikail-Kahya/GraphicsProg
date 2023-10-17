@@ -49,8 +49,8 @@ namespace dae
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
 			//todo: W3
-
-			const float a{ powf(1 - Vector3::Dot(h, v), 5) };
+			float a{ 1 - Vector3::Dot(h, v) };
+			a = a * a * a * a * a;
 			const ColorRGB inverseAlbedo{ colors::White - f0 };
 
 			return f0 + inverseAlbedo * a;
@@ -66,11 +66,13 @@ namespace dae
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
 			//todo: W3
-			const float alphaSqr{ powf(roughness, 4) };
-			const float cosAngleSqr{ powf(Vector3::Dot(n,h),2) };
+
+			const float alphaSqr{ roughness * roughness * roughness * roughness };
+			const float cosAngle{ Vector3::Dot(n,h) };
+			const float b{ cosAngle * cosAngle * (alphaSqr - 1) + 1 };
 
 			// fresnel function
-			return alphaSqr / ( PI * powf( cosAngleSqr * (alphaSqr - 1) + 1, 2) );
+			return alphaSqr / ( PI * b * b );
 		}
 
 
@@ -85,7 +87,8 @@ namespace dae
 		{
 			//todo: W3
 			// 1/8 = 0.125
-			const float k{ powf(roughness * roughness + 1, 2) * 0.125f };
+			const float a{ roughness * roughness + 1 };
+			const float k{ a * a * 0.125f };
 			const float cosAngle{ Vector3::Dot(n, v) }; // abs is a hotfix
 
 			return cosAngle / (cosAngle * (1 - k) + k);

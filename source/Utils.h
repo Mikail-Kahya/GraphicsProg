@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <cassert>
 #include <fstream>
 #include "Math.h"
@@ -97,7 +98,59 @@ namespace dae
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W5
-			assert(false && "No Implemented Yet!");
+			// Get intersection point with plane
+			float normalViewDot{ Vector3::Dot(triangle.normal, ray.direction) };
+
+			// in case of shadows inverse the dot
+			if (ignoreHitRecord)
+				normalViewDot *= -1;
+
+			switch (triangle.cullMode)
+			{
+			case TriangleCullMode::FrontFaceCulling:
+				if ( normalViewDot <= 0)
+					return false;
+				break;
+			case TriangleCullMode::BackFaceCulling:
+				std::cout << "moooooo";
+				if (normalViewDot >= 0)
+				{
+					std::cout << "boo";
+					return false;
+				}
+					
+				break;
+			case TriangleCullMode::NoCulling:
+				if (abs(normalViewDot) < FLT_EPSILON)
+					return false;
+				break;
+			}
+
+			const Vector3 L{ triangle.v0 - ray.origin };
+			const float t{ Vector3::Dot(L, triangle.normal) / Vector3::Dot(ray.direction, triangle.normal) };
+
+			if (t < ray.min || t > ray.max)
+				return false;
+
+			const Vector3 intersection{ ray.origin + ray.direction * t };
+
+			// Check if intersection point is in the triangle
+			std::array vertexVec{ triangle.v0, triangle.v1, triangle.v2 };
+			const int nrVertices{ int(vertexVec.size()) };
+
+			for (int index{}; index < nrVertices; ++index)
+			{
+				const Vector3 e{ vertexVec[(index + 1) % nrVertices] - vertexVec[index] };
+				const Vector3 p{ intersection - vertexVec[index] };
+				if (Vector3::Dot(Vector3::Cross(e, p), triangle.normal) < 0)
+					return false;
+			}
+
+			hitRecord.origin = intersection;
+			hitRecord.didHit = true;
+			hitRecord.normal = triangle.normal;
+			hitRecord.materialIndex = triangle.materialIndex;
+			hitRecord.t = t;
 			return false;
 		}
 
@@ -111,7 +164,7 @@ namespace dae
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			//todo W5
-			assert(false && "No Implemented Yet!");
+			
 			return false;
 		}
 

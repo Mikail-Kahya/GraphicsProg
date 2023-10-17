@@ -47,6 +47,8 @@ namespace dae
 
 		std::vector<Plane> m_PlaneGeometries{};
 		std::vector<Sphere> m_SphereGeometries{};
+		std::vector<Triangle> m_TriangleVec{};
+
 		std::vector<TriangleMesh> m_TriangleMeshGeometries{};
 		std::vector<Light> m_Lights{};
 		std::vector<Material*> m_Materials{};
@@ -116,5 +118,43 @@ namespace dae
 		void Final();
 		void Intermediary();
 		void LambertPhong();
+	};
+
+	//+++++++++++++++++++++++++++++++++++++++++
+	//WEEK 4 Test Scene
+	class Scene_W4_TestScene final : public Scene
+	{
+	public:
+		Scene_W4_TestScene() = default;
+		~Scene_W4_TestScene() override = default;
+
+		Scene_W4_TestScene(const Scene_W4_TestScene&) = delete;
+		Scene_W4_TestScene(Scene_W4_TestScene&&) noexcept = delete;
+		Scene_W4_TestScene& operator=(const Scene_W4_TestScene&) = delete;
+		Scene_W4_TestScene& operator=(Scene_W4_TestScene&&) noexcept = delete;
+
+		void Initialize() override;
+
+	private:
+		TriangleMesh* m_MeshPtr{ nullptr };
+	};
+
+	//+++++++++++++++++++++++++++++++++++++++++
+	//WEEK 4 Reference Scene
+	class Scene_W4_ReferenceScene final : public Scene
+	{
+	public:
+		Scene_W4_ReferenceScene() = default;
+		~Scene_W4_ReferenceScene() override = default;
+
+		Scene_W4_ReferenceScene(const Scene_W4_ReferenceScene&) = delete;
+		Scene_W4_ReferenceScene(Scene_W4_ReferenceScene&&) noexcept = delete;
+		Scene_W4_ReferenceScene& operator=(const Scene_W4_ReferenceScene&) = delete;
+		Scene_W4_ReferenceScene& operator=(Scene_W4_ReferenceScene&&) noexcept = delete;
+
+		void Initialize() override;
+
+	private:
+		std::vector<TriangleMesh*> m_MeshVec{};
 	};
 }
