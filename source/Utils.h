@@ -112,13 +112,8 @@ namespace dae
 					return false;
 				break;
 			case TriangleCullMode::BackFaceCulling:
-				std::cout << "moooooo";
 				if (normalViewDot >= 0)
-				{
-					std::cout << "boo";
 					return false;
-				}
-					
 				break;
 			case TriangleCullMode::NoCulling:
 				if (abs(normalViewDot) < FLT_EPSILON)
@@ -151,7 +146,7 @@ namespace dae
 			hitRecord.normal = triangle.normal;
 			hitRecord.materialIndex = triangle.materialIndex;
 			hitRecord.t = t;
-			return false;
+			return true;
 		}
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)

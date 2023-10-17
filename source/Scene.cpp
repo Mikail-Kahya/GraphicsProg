@@ -342,7 +342,7 @@ namespace dae {
 		////Triangle (Temp)
 		////===============
 		auto triangle = Triangle{ {-.75f,.5f,.0f},{-.75f,2.f, .0f}, {.75f,.5f,0.f} };
-		triangle.cullMode = TriangleCullMode::NoCulling;
+		triangle.cullMode = TriangleCullMode::FrontFaceCulling;
 		triangle.materialIndex = matLambert_White;
 
 		m_TriangleVec.emplace_back(triangle);
