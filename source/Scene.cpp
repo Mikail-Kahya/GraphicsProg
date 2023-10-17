@@ -54,6 +54,13 @@ namespace dae {
 				temp = closestHit;
 		}
 
+		for (const TriangleMesh& triangleMesh : m_TriangleMeshGeometries)
+		{
+			GeometryUtils::HitTest_TriangleMesh(triangleMesh, ray, closestHit);
+			if (temp.t > closestHit.t)
+				temp = closestHit;
+		}
+
 		closestHit = temp;
 	}
 
@@ -339,17 +346,40 @@ namespace dae {
 		AddPlane(Vector3{ 5.f, 0.f, 0.f }, Vector3{ -1.f, 0.f, 0.f }, matLambert_GrayBlue); //RIGHT
 		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
 
+		//CreateTriangle(matLambert_White);
+		//CreateTestMesh(matLambert_White);
+		CreateObjMesh(matLambert_White);
+
+		//Light
+		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
+		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
+		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
+	}
+
+	void Scene_W4_TestScene::Update(dae::Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+
+		m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		m_MeshPtr->UpdateTransforms();
+	}
+
+	void Scene_W4_TestScene::CreateTriangle(char materialIndex)
+	{
 		////Triangle (Temp)
 		////===============
 		auto triangle = Triangle{ {-.75f,.5f,.0f},{-.75f,2.f, .0f}, {.75f,.5f,0.f} };
-		triangle.cullMode = TriangleCullMode::FrontFaceCulling;
-		triangle.materialIndex = matLambert_White;
+		triangle.cullMode = TriangleCullMode::NoCulling;
+		triangle.materialIndex = materialIndex;
 
 		m_TriangleVec.emplace_back(triangle);
+	}
 
+	void Scene_W4_TestScene::CreateTestMesh(char materialIndex)
+	{
 		//Triangle Mesh
 		//=============
-		m_MeshPtr = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
+		m_MeshPtr = AddTriangleMesh(TriangleCullMode::NoCulling, materialIndex);
 		m_MeshPtr->positions = {
 			{-.75f,-1.f,.0f},  //V0
 			{-.75f,1.f, .0f},  //V2
@@ -364,28 +394,27 @@ namespace dae {
 		m_MeshPtr->CalculateNormals();
 
 		m_MeshPtr->Translate({ 0.f,1.5f,0.f });
+		m_MeshPtr->RotateY(90);
 		m_MeshPtr->UpdateTransforms();
+	}
 
-		////OBJ
-		////===
-		//pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		//Utils::ParseOBJ("Resources/simple_cube.obj",
-		////Utils::ParseOBJ("Resources/simple_object.obj",
-		//	pMesh->positions, 
-		//	pMesh->normals, 
-		//	pMesh->indices);
+	void Scene_W4_TestScene::CreateObjMesh(char materialIndex)
+	{
+		//OBJ
+		//===
+		m_MeshPtr = AddTriangleMesh(TriangleCullMode::BackFaceCulling, materialIndex);
+		Utils::ParseOBJ("Resources/simple_cube.obj",
+			//Utils::ParseOBJ("Resources/simple_object.obj",
+			m_MeshPtr->positions,
+			m_MeshPtr->normals,
+			m_MeshPtr->indices);
 
-		////No need to Calculate the normals, these are calculated inside the ParseOBJ function
-		//pMesh->UpdateTransforms();
+		//No need to Calculate the normals, these are calculated inside the ParseOBJ function
 
-		//pMesh->Scale({ .7f,.7f,.7f });
-		//pMesh->Translate({ .0f,1.f,0.f });
+		m_MeshPtr->Scale({ .7f,.7f,.7f });
+		m_MeshPtr->Translate({ 100.0f,1.f,0.f });
 
-
-		//Light
-		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
-		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
-		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
+		m_MeshPtr->UpdateTransforms();
 	}
 
 	void Scene_W4_ReferenceScene::Initialize()

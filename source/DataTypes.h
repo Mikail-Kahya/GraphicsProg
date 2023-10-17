@@ -43,6 +43,8 @@ namespace dae
 			const Vector3 edgeV0V2 = v2 - v0;
 			normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
 		}
+		Triangle(const std::vector<Vector3>& vertices, const Vector3& normal):
+			Triangle(vertices[0], vertices[1], vertices[2], normal) {}
 
 		Vector3 v0{};
 		Vector3 v1{};
@@ -123,29 +125,46 @@ namespace dae
 
 		void CalculateNormals()
 		{
-			const int nrVertices{ 3 };
-			int nrTriangles{ int(indices.size() / nrVertices) };
+			constexpr int nrVertices{ 3 };
+			const int nrTriangles{ static_cast<int>(indices.size() / nrVertices) };
 
-			for (int index{}; index < nrTriangles; index += nrVertices)
+			for (int index{}; index < nrTriangles; ++index)
 			{
-				const Vector3 v0{ positions[index] };
-				const Vector3 v1{ positions[index + 1] };
+				const int offset{ index * nrVertices };
 
-				normals.push_back(Vector3::Cross(v0, v1));
+				const Vector3 v0{ positions[indices[offset]] };
+				const Vector3 v1{ positions[indices[offset + 1]] };
+				const Vector3 v2{ positions[indices[offset + 2]] };
+
+				normals.push_back(Vector3::Cross(v1 - v0, v2 - v1));
 			}
 		}
 
 		void UpdateTransforms()
 		{
-			
+			ReserveSpace();
+
 			//Calculate Final Transform 
 			//const auto finalTransform = ...
+			const Matrix finalTransform{ scaleTransform * rotationTransform * translationTransform };
 
 			//Transform Positions (positions > transformedPositions)
 			//...
+			for (int index{}; index < static_cast<int>(positions.size()); ++index)
+				transformedPositions[index] = finalTransform.TransformPoint(positions[index]);
 
 			//Transform Normals (normals > transformedNormals)
 			//...
+			for (int index{}; index < static_cast<int>(normals.size()); ++index)
+				transformedNormals[index] = rotationTransform.TransformVector(normals[index]);
+		}
+
+		void ReserveSpace()
+		{
+			if (transformedNormals.size() != normals.size())
+				transformedNormals.resize(normals.size());
+			if (transformedPositions.size() != positions.size())
+				transformedPositions.resize(positions.size());
 		}
 	};
 #pragma endregion

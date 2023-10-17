@@ -134,8 +134,13 @@ namespace dae
 		Scene_W4_TestScene& operator=(Scene_W4_TestScene&&) noexcept = delete;
 
 		void Initialize() override;
+		void Update(dae::Timer* pTimer) override;
 
 	private:
+		void CreateTriangle(char materialIndex);
+		void CreateTestMesh(char materialIndex);
+		void CreateObjMesh(char materialIndex);
+
 		TriangleMesh* m_MeshPtr{ nullptr };
 	};
 
