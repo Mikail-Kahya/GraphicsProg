@@ -123,7 +123,16 @@ namespace dae
 
 		void CalculateNormals()
 		{
-			
+			const int nrVertices{ 3 };
+			int nrTriangles{ int(indices.size() / nrVertices) };
+
+			for (int index{}; index < nrTriangles; index += nrVertices)
+			{
+				const Vector3 v0{ positions[index] };
+				const Vector3 v1{ positions[index + 1] };
+
+				normals.push_back(Vector3::Cross(v0, v1));
+			}
 		}
 
 		void UpdateTransforms()
