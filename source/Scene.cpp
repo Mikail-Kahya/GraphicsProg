@@ -85,6 +85,12 @@ namespace dae {
 				return true;
 		}
 
+		for (const TriangleMesh& mesh : m_TriangleMeshGeometries)
+		{
+			if (GeometryUtils::HitTest_TriangleMesh(mesh, ray))
+				return true;
+		}
+
 		return false;
 	}
 
