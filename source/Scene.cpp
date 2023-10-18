@@ -412,7 +412,7 @@ namespace dae {
 		//No need to Calculate the normals, these are calculated inside the ParseOBJ function
 
 		m_MeshPtr->Scale({ .7f,.7f,.7f });
-		m_MeshPtr->Translate({ 100.0f,1.f,0.f });
+		m_MeshPtr->Translate({ 0,1.f,0.f });
 
 		m_MeshPtr->UpdateTransforms();
 	}
