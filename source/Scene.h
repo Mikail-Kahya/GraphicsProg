@@ -158,8 +158,28 @@ namespace dae
 		Scene_W4_ReferenceScene& operator=(Scene_W4_ReferenceScene&&) noexcept = delete;
 
 		void Initialize() override;
+		void Update(dae::Timer* pTimer) override;
 
 	private:
-		std::vector<TriangleMesh*> m_MeshVec{};
+		std::vector<TriangleMesh*> m_MeshPtrVec{};
+	};
+
+	//+++++++++++++++++++++++++++++++++++++++++
+	//WEEK 4 Bunny Scene
+	class Scene_W4_BunnyScene final : public Scene
+	{
+	public:
+		Scene_W4_BunnyScene() = default;
+		~Scene_W4_BunnyScene() override = default;
+
+		Scene_W4_BunnyScene(const Scene_W4_BunnyScene&) = delete;
+		Scene_W4_BunnyScene(Scene_W4_BunnyScene&&) noexcept = delete;
+		Scene_W4_BunnyScene& operator=(const Scene_W4_BunnyScene&) = delete;
+		Scene_W4_BunnyScene& operator=(Scene_W4_BunnyScene&&) noexcept = delete;
+
+		void Initialize() override;
+
+	private:
+		TriangleMesh* m_MeshPtr{ nullptr };
 	};
 }

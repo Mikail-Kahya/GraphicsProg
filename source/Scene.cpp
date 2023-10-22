@@ -353,8 +353,8 @@ namespace dae {
 		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
 
 		//CreateTriangle(matLambert_White);
-		//CreateTestMesh(matLambert_White);
-		CreateObjMesh(matLambert_White);
+		CreateTestMesh(matLambert_White);
+		//CreateObjMesh(matLambert_White);
 
 		//Light
 		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
@@ -366,8 +366,8 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
-		m_MeshPtr->UpdateTransforms();
+		//m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		//m_MeshPtr->UpdateTransforms();
 	}
 
 	void Scene_W4_TestScene::CreateTriangle(char materialIndex)
@@ -385,7 +385,7 @@ namespace dae {
 	{
 		//Triangle Mesh
 		//=============
-		m_MeshPtr = AddTriangleMesh(TriangleCullMode::NoCulling, materialIndex);
+		m_MeshPtr = AddTriangleMesh(TriangleCullMode::FrontFaceCulling, materialIndex);
 		m_MeshPtr->positions = {
 			{-.75f,-1.f,.0f},  //V0
 			{-.75f,1.f, .0f},  //V2
@@ -455,20 +455,70 @@ namespace dae {
 		//CW Winding Order!
 		const Triangle baseTriangle = { Vector3(-.75f, 1.5f, 0.f), Vector3(.75f, 0.f, 0.f), Vector3(-.75f, 0.f, 0.f) };
 
-		m_MeshVec[0] = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-		m_MeshVec[0]->AppendTriangle(baseTriangle, true);
-		m_MeshVec[0]->Translate({ -1.75f,4.5f,0.f });
-		m_MeshVec[0]->UpdateTransforms();
+		m_MeshPtrVec.resize(3);
 
-		m_MeshVec[1] = AddTriangleMesh(TriangleCullMode::FrontFaceCulling, matLambert_White);
-		m_MeshVec[1]->AppendTriangle(baseTriangle, true);
-		m_MeshVec[1]->Translate({ 0.f,4.5f,0.f });
-		m_MeshVec[1]->UpdateTransforms();
+		m_MeshPtrVec[0] = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
+		m_MeshPtrVec[0]->AppendTriangle(baseTriangle, true);
+		m_MeshPtrVec[0]->Translate({ -1.75f,4.5f,0.f });
+		m_MeshPtrVec[0]->UpdateTransforms();
 
-		m_MeshVec[2] = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		m_MeshVec[2]->AppendTriangle(baseTriangle, true);
-		m_MeshVec[2]->Translate({ 1.75f,4.5f,0.f });
-		m_MeshVec[2]->UpdateTransforms();
+		m_MeshPtrVec[1] = AddTriangleMesh(TriangleCullMode::FrontFaceCulling, matLambert_White);
+		m_MeshPtrVec[1]->AppendTriangle(baseTriangle, true);
+		m_MeshPtrVec[1]->Translate({ 0.f,4.5f,0.f });
+		m_MeshPtrVec[1]->UpdateTransforms();
+
+		m_MeshPtrVec[2] = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		m_MeshPtrVec[2]->AppendTriangle(baseTriangle, true);
+		m_MeshPtrVec[2]->Translate({ 1.75f,4.5f,0.f });
+		m_MeshPtrVec[2]->UpdateTransforms();
+
+		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
+		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
+		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
+	}
+
+	void Scene_W4_ReferenceScene::Update(dae::Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+
+		for (TriangleMesh* meshPtr : m_MeshPtrVec)
+		{
+			meshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
+			meshPtr->UpdateTransforms();
+		}
+		
+	}
+
+	void Scene_W4_BunnyScene::Initialize()
+	{
+		sceneName = "Reference Scene";
+		m_Camera.origin = { 0,3,-9 };
+		m_Camera.fovAngle = 45.f;
+
+		const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({ .49f, 0.57f, 0.57f }, 1.f));
+		const auto matLambert_White = AddMaterial(new Material_Lambert(colors::White, 1.f));
+
+		AddPlane(Vector3{ 0.f, 0.f, 10.f }, Vector3{ 0.f, 0.f, -1.f }, matLambert_GrayBlue); //BACK
+		AddPlane(Vector3{ 0.f, 0.f, 0.f }, Vector3{ 0.f, 1.f, 0.f }, matLambert_GrayBlue); //BOTTOM
+		AddPlane(Vector3{ 0.f, 10.f, 0.f }, Vector3{ 0.f, -1.f, 0.f }, matLambert_GrayBlue); //TOP
+		AddPlane(Vector3{ 5.f, 0.f, 0.f }, Vector3{ -1.f, 0.f, 0.f }, matLambert_GrayBlue); //RIGHT
+		AddPlane(Vector3{ -5.f, 0.f, 0.f }, Vector3{ 1.f, 0.f, 0.f }, matLambert_GrayBlue); //LEFT
+
+
+		//OBJ
+		//===
+		m_MeshPtr = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
+		Utils::ParseOBJ("Resources/lowpoly_bunny.obj",
+			//Utils::ParseOBJ("Resources/simple_object.obj",
+			m_MeshPtr->positions,
+			m_MeshPtr->normals,
+			m_MeshPtr->indices);
+
+		//No need to Calculate the normals, these are calculated inside the ParseOBJ function
+
+		m_MeshPtr->Translate({ 0,1.f,0.f });
+
+		m_MeshPtr->UpdateTransforms();
 
 		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
 		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
