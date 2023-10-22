@@ -366,8 +366,8 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		//m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
-		//m_MeshPtr->UpdateTransforms();
+		m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		m_MeshPtr->UpdateTransforms();
 	}
 
 	void Scene_W4_TestScene::CreateTriangle(char materialIndex)
