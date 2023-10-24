@@ -385,7 +385,7 @@ namespace dae {
 	{
 		//Triangle Mesh
 		//=============
-		m_MeshPtr = AddTriangleMesh(TriangleCullMode::FrontFaceCulling, materialIndex);
+		m_MeshPtr = AddTriangleMesh(TriangleCullMode::NoCulling, materialIndex);
 		m_MeshPtr->positions = {
 			{-.75f,-1.f,.0f},  //V0
 			{-.75f,1.f, .0f},  //V2

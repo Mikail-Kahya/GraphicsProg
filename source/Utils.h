@@ -248,6 +248,9 @@ namespace dae
 
 				if (HitTest_Triangle_Moller(triangle, ray, temp, ignoreHitRecord))
 				{
+					if (ignoreHitRecord)
+						return true;
+
 					if (temp.t < hitRecord.t)
 					{
 						hitRecord = temp;

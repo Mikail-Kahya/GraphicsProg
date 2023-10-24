@@ -40,6 +40,17 @@ void Renderer::Render(Scene* pScene) const
 	const uint32_t nrPixels{ uint32_t(m_Width * m_Height) };
 
 #ifdef PARALLEL_EXECUTION
+	std::vector<uint32_t> pixelIndexVec{};
+
+	pixelIndexVec.reserve(nrPixels);
+	for (uint32_t index{}; index < nrPixels; ++index) 
+		pixelIndexVec.emplace_back(index);
+
+	std::for_each(std::execution::par, pixelIndexVec.begin(), pixelIndexVec.end(), 
+		[&](int i) 
+		{
+			RenderOnePixel(pScene, i, fov, aspectRatio, cameraToWorld, camera.origin, materialVec, lightVec);
+		});
 
 #else
 	for (uint32_t index{}; index < nrPixels; ++index)
@@ -68,6 +79,7 @@ void Renderer::RenderOnePixel(	Scene* pScene, uint32_t pixelIndex, float fov, fl
 	Ray viewRay{ cameraOrigin, rayDirection };
 
 	ColorRGB finalColor{};
+	float reflectionValue{ 1.f };
 
 	for (int bounce{}; bounce < m_Bounces; ++bounce)
 	{
@@ -114,12 +126,15 @@ void Renderer::RenderOnePixel(	Scene* pScene, uint32_t pixelIndex, float fov, fl
 					break;
 				}
 
-				finalColor += lighting;
+				finalColor += lighting * reflectionValue;
 			}
 		}
 
 		viewRay.direction = Vector3::Reflect(viewRay.direction, closestHit.normal);
 		viewRay.origin = closestHit.origin;
+
+		if (bounce)
+			reflectionValue /= 2;
 	}
 
 	// Update Color in Buffer

@@ -50,7 +50,7 @@ namespace dae
 		int m_Width{};
 		int m_Height{};
 		bool m_EnableShadows{ true };
-		const int m_Bounces{ 2 };
+		const int m_Bounces{ 1 };
 		LightingMode m_LightingMode{ LightingMode::Combined };
 	};
 }
