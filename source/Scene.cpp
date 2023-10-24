@@ -366,8 +366,8 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
-		m_MeshPtr->UpdateTransforms();
+		//m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		//m_MeshPtr->UpdateTransforms();
 	}
 
 	void Scene_W4_TestScene::CreateTriangle(char materialIndex)
@@ -408,7 +408,7 @@ namespace dae {
 	{
 		//OBJ
 		//===
-		m_MeshPtr = AddTriangleMesh(TriangleCullMode::BackFaceCulling, materialIndex);
+		m_MeshPtr = AddTriangleMesh(TriangleCullMode::NoCulling, materialIndex);
 		Utils::ParseOBJ("Resources/simple_cube.obj",
 			//Utils::ParseOBJ("Resources/simple_object.obj",
 			m_MeshPtr->positions,

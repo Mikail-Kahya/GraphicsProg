@@ -9,6 +9,7 @@ struct SDL_Surface;
 
 namespace dae
 {
+	class Material;
 	class Scene;
 
 	class Renderer final
@@ -29,6 +30,10 @@ namespace dae
 		void ToggleShadows() { m_EnableShadows = !m_EnableShadows; }
 
 	private:
+		void RenderOnePixel(Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, 
+							const Matrix& cameraToWorld, const Vector3& cameraOrigin, 
+							const std::vector<Material*>& materialVec, const std::vector<Light>& lightVec) const;
+
 		enum class LightingMode
 		{
 			ObservedArea,	// Lambert Cosine Law
