@@ -11,6 +11,9 @@
 #include "Utils.h"
 
 #define PARALLEL_EXECUTION
+#ifdef PARALLEL_EXECUTION
+#include <execution>
+#endif
 
 using namespace dae;
 
@@ -34,10 +37,12 @@ void Renderer::Render(Scene* pScene) const
 	const auto& lightVec{ pScene->GetLights() };
 	const auto& materialVec{ pScene->GetMaterials() };
 
+	const uint32_t nrPixels{ uint32_t(m_Width * m_Height) };
+
 #ifdef PARALLEL_EXECUTION
 
 #else
-	for (int index{}; index < m_Width * m_Height; ++index)
+	for (uint32_t index{}; index < nrPixels; ++index)
 		RenderOnePixel(pScene, index, fov, aspectRatio, cameraToWorld, camera.origin, materialVec, lightVec);
 #endif
 
@@ -60,55 +65,61 @@ void Renderer::RenderOnePixel(	Scene* pScene, uint32_t pixelIndex, float fov, fl
 	rayDirection = cameraToWorld.TransformVector(rayDirection);
 	rayDirection.Normalize();
 
-	const Ray viewRay{ cameraOrigin, rayDirection };
+	Ray viewRay{ cameraOrigin, rayDirection };
 
 	ColorRGB finalColor{};
 
-	// hitinfo
-	HitRecord closestHit{};
-	pScene->GetClosestHit(viewRay, closestHit);
-
-	if (closestHit.didHit)
+	for (int bounce{}; bounce < m_Bounces; ++bounce)
 	{
-		Material* material{ materialVec[closestHit.materialIndex] };
+		// hitinfo
+		HitRecord closestHit{};
+		pScene->GetClosestHit(viewRay, closestHit);
 
-		for (const Light& light : lightVec)
+		if (closestHit.didHit)
 		{
-			// get light to closesthit
-			const Vector3 invertedLightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
-			const float length{ invertedLightDirection.Magnitude() - FLT_EPSILON };
-			Ray invertedLightRay{ closestHit.origin + closestHit.normal * FLT_EPSILON, invertedLightDirection.Normalized(), FLT_EPSILON, length };
+			Material* material{ materialVec[closestHit.materialIndex] };
 
-			// if it hits, the object is being blocked => darken
-			if (pScene->DoesHit(invertedLightRay) && m_EnableShadows)
-				continue;
-
-			const float observedArea{ Vector3::Dot(invertedLightRay.direction, closestHit.normal) };
-			const ColorRGB radiance{ LightUtils::GetRadiance(light, closestHit.origin) };
-			const ColorRGB materialShading{ material->Shade(closestHit, invertedLightRay.direction, -viewRay.direction) };
-			ColorRGB lighting{};
-
-			if (observedArea < 0)
-				continue;
-
-			switch (m_LightingMode)
+			for (const Light& light : lightVec)
 			{
-			case LightingMode::ObservedArea:
-				finalColor += colors::White * observedArea;
-				continue;
-			case LightingMode::Radiance:
-				lighting = radiance;
-				break;
-			case LightingMode::BRDF:
-				lighting = materialShading;
-				break;
-			case LightingMode::Combined:
-				lighting = radiance * materialShading * observedArea;
-				break;
-			}
+				// get light to closesthit
+				const Vector3 invertedLightDirection{ LightUtils::GetDirectionToLight(light, closestHit.origin) };
+				const float length{ invertedLightDirection.Magnitude() - FLT_EPSILON };
+				Ray invertedLightRay{ closestHit.origin + closestHit.normal * FLT_EPSILON, invertedLightDirection.Normalized(), FLT_EPSILON, length };
 
-			finalColor += lighting;
+				// if it hits, the object is being blocked => darken
+				if (pScene->DoesHit(invertedLightRay) && m_EnableShadows)
+					continue;
+
+				const float observedArea{ Vector3::Dot(invertedLightRay.direction, closestHit.normal) };
+				const ColorRGB radiance{ LightUtils::GetRadiance(light, closestHit.origin) };
+				const ColorRGB materialShading{ material->Shade(closestHit, invertedLightRay.direction, -viewRay.direction) };
+				ColorRGB lighting{};
+
+				if (observedArea < 0)
+					continue;
+
+				switch (m_LightingMode)
+				{
+				case LightingMode::ObservedArea:
+					finalColor += colors::White * observedArea;
+					continue;
+				case LightingMode::Radiance:
+					lighting = radiance;
+					break;
+				case LightingMode::BRDF:
+					lighting = materialShading;
+					break;
+				case LightingMode::Combined:
+					lighting = radiance * materialShading * observedArea;
+					break;
+				}
+
+				finalColor += lighting;
+			}
 		}
+
+		viewRay.direction = Vector3::Reflect(viewRay.direction, closestHit.normal);
+		viewRay.origin = closestHit.origin;
 	}
 
 	// Update Color in Buffer
