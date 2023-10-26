@@ -40,7 +40,7 @@ namespace dae
 		const std::vector<Plane>& GetPlaneGeometries() const { return m_PlaneGeometries; }
 		const std::vector<Sphere>& GetSphereGeometries() const { return m_SphereGeometries; }
 		const std::vector<Light>& GetLights() const { return m_Lights; }
-		const std::vector<Material*> GetMaterials() const { return m_Materials; }
+		const std::vector<Material*>& GetMaterials() const { return m_Materials; }
 
 	protected:
 		std::string	sceneName;
@@ -178,6 +178,7 @@ namespace dae
 		Scene_W4_BunnyScene& operator=(Scene_W4_BunnyScene&&) noexcept = delete;
 
 		void Initialize() override;
+		void Update(dae::Timer* pTimer) override;
 
 	private:
 		TriangleMesh* m_MeshPtr{ nullptr };

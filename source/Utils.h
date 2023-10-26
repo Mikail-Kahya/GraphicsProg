@@ -258,7 +258,7 @@ namespace dae
 			// If det is near zero,
 			const float det{ Vector3::Dot(edge1, pVec) };
 
-			if (det > -FLT_EPSILON && det < FLT_EPSILON)
+			if (abs(det) < FLT_EPSILON)
 				return false;
 
 			const float invDet{ 1.f / det };

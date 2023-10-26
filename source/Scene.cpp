@@ -517,12 +517,21 @@ namespace dae {
 		//No need to Calculate the normals, these are calculated inside the ParseOBJ function
 
 		m_MeshPtr->Translate({ 0,1.f,0.f });
+		m_MeshPtr->Scale({ 2,2,2 });
 
 		m_MeshPtr->UpdateTransforms();
 
 		AddPointLight(Vector3{ 0.f, 5.f, 5.f }, 50.f, ColorRGB{ 1.f, .61f, .45f }); //Backlight
 		AddPointLight(Vector3{ -2.5f, 5.f, -5.f }, 70.f, ColorRGB{ 1.f, .8f, .45f }); //Front Light Left
 		AddPointLight(Vector3{ 2.5f, 2.5f, -5.f }, 50.f, ColorRGB{ .34f, .47f, .68f });
+	}
+
+	void Scene_W4_BunnyScene::Update(dae::Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+
+		m_MeshPtr->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		m_MeshPtr->UpdateTransforms();
 	}
 #pragma endregion
 }
