@@ -163,6 +163,9 @@ namespace dae
 			//...
 			for (int index{}; index < static_cast<int>(normals.size()); ++index)
 				transformedNormals[index] = rotationTransform.TransformVector(normals[index]);
+
+			UpdateAABB();
+			UpdateTransformedAABB(finalTransform);
 		}
 
 		void ReserveSpace()
