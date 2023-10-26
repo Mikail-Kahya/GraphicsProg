@@ -105,7 +105,7 @@ namespace dae
 
 		void Rotate(int mouseX, int mouseY, float deltaTime)
 		{
-			const float MouseSpeed{ 10.f };
+			const float MouseSpeed{ 20.f };
 			bool mouseMoved{ false };
 			
 			if (mouseX)
