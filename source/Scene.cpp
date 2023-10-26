@@ -49,7 +49,7 @@ namespace dae {
 
 		for (const Triangle& triangle : m_TriangleVec)
 		{
-			GeometryUtils::HitTest_Triangle(triangle, ray, closestHit);
+			GeometryUtils::HitTest_Triangle_Moller(triangle, ray, closestHit);
 			if (temp.t > closestHit.t)
 				temp = closestHit;
 		}

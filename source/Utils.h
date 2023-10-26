@@ -220,11 +220,84 @@ namespace dae
 			return true;
 		}
 
+		inline bool HitTest_Triangle_Moller(	const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& normal,
+												TriangleCullMode cullmode, unsigned char materialIndex,
+												const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
+		{
+			// source : https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
+			// Get intersection point with plane
+			float normalViewDot{ Vector3::Dot(normal, ray.direction) };
+
+			// in case of shadows inverse the dot
+			if (ignoreHitRecord)
+				normalViewDot *= -1;
+
+			switch (cullmode)
+			{
+			case TriangleCullMode::FrontFaceCulling:
+				if (normalViewDot <= 0)
+					return false;
+				break;
+			case TriangleCullMode::BackFaceCulling:
+				if (normalViewDot >= 0)
+					return false;
+				break;
+			case TriangleCullMode::NoCulling:
+				if (abs(normalViewDot) < FLT_EPSILON)
+					return false;
+				break;
+			}
+
+			// Get edges sharing v0
+			const Vector3 edge1{ v1 - v0 };
+			const Vector3 edge2{ v2 - v0 };
+
+			// used to calculate U param
+			const Vector3 pVec{ Vector3::Cross(ray.direction, edge2) };
+
+			// If det is near zero,
+			const float det{ Vector3::Dot(edge1, pVec) };
+
+			if (det > -FLT_EPSILON && det < FLT_EPSILON)
+				return false;
+
+			const float invDet{ 1.f / det };
+
+			const Vector3 tVec{ ray.origin - v0 };
+
+			// calculate u and test bounds
+			const float u{ Vector3::Dot(tVec, pVec) * invDet };
+			if (u < 0 || u > 1.f)
+				return false;
+
+			// used to calculate V param
+			const Vector3 qVec{ Vector3::Cross(tVec, edge1) };
+
+			// calculate v and test bounds
+			const float v{ Vector3::Dot(ray.direction, qVec) * invDet };
+			if (v < 0 || u + v > 1.f)
+				return false;
+
+			const float t{ Vector3::Dot(edge2, qVec) * invDet };
+
+			// ray doesn't go the opposite way or beyond its max extent
+			if (t < ray.min || t > ray.max)
+				return false;
+
+			hitRecord.origin = (1 - u - v) * v0 + u * v1 + v * v2;
+			hitRecord.didHit = true;
+			hitRecord.normal = normal;
+			hitRecord.materialIndex = materialIndex;
+			hitRecord.t = t;
+
+			return true;
+		}
+
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
 		{
 			HitRecord temp{};
-			return HitTest_Triangle(triangle, ray, temp, true);
+			return HitTest_Triangle_Moller(triangle, ray, temp, true);
 		}
 #pragma endregion
 #pragma region TriangeMesh HitTest
@@ -238,15 +311,13 @@ namespace dae
 			{
 				const int offset{ index * 3 };
 
-				const Vector3 v0{ mesh.transformedPositions[mesh.indices[offset]] };
-				const Vector3 v1{ mesh.transformedPositions[mesh.indices[offset + 1]] };
-				const Vector3 v2{ mesh.transformedPositions[mesh.indices[offset + 2]] };
+				const Vector3& v0{ mesh.transformedPositions[mesh.indices[offset]] };
+				const Vector3& v1{ mesh.transformedPositions[mesh.indices[offset + 1]] };
+				const Vector3& v2{ mesh.transformedPositions[mesh.indices[offset + 2]] };
+				const Vector3& normal{ mesh.transformedNormals[index] };
 
-				auto triangle = Triangle{ v0, v1, v2, mesh.transformedNormals[index] };
-				triangle.cullMode = mesh.cullMode;
-				triangle.materialIndex = mesh.materialIndex;
-
-				if (HitTest_Triangle_Moller(triangle, ray, temp, ignoreHitRecord))
+				if (HitTest_Triangle_Moller(v0, v1, v2, normal, mesh.cullMode, 
+											mesh.materialIndex, ray, temp, ignoreHitRecord))
 				{
 					if (ignoreHitRecord)
 						return true;

@@ -86,6 +86,12 @@ namespace dae
 		Matrix translationTransform{};
 		Matrix scaleTransform{};
 
+		Vector3 minAABB{};
+		Vector3 maxAABB{};
+
+		Vector3 transformedMinAABB{};
+		Vector3 transformedMaxAABB{};
+
 		std::vector<Vector3> transformedPositions{};
 		std::vector<Vector3> transformedNormals{};
 
@@ -165,6 +171,16 @@ namespace dae
 				transformedNormals.resize(normals.size());
 			if (transformedPositions.size() != positions.size())
 				transformedPositions.resize(positions.size());
+		}
+
+		void UpdateAABB()
+		{
+			
+		}
+
+		void UpdateTransformedAABB()
+		{
+			
 		}
 	};
 #pragma endregion
